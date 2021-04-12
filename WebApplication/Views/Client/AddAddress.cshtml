@@ -1,0 +1,167 @@
+﻿@{
+    ViewData["Title"] = "Cadastro Clientes";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                Cadastro de Clientes
+            </div>
+            <div class="card-body">
+                <h4>Informe o Endereço</h4>
+                <form method="post">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>CEP</label>
+                                <input type="text" name="ZipCode" id="ZipCode" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Endereço</label>
+                                <input type="text" name="Address" id="address" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Bairro</label>
+                                <input type="text" name="Neighborhood" id="Neigborhood" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Número°</label>
+                                <input type="text" name="AddressNumber" id="AddressNumber" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Complemento</label>
+                                <input type="text" name="AddressComplement" id="AddressComplement" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Cidade</label>
+                                <input type="text" name="City" id="City" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Estado</label>
+                                <input type="text" name="State" id="State" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Tipo Endereço:</label>
+                                <select class="custom-select" name="TypeAddress" id="TypeAddress" onchange="selectType()">
+                                    <option value="">Selecione</option>
+                                    <option value="1">Cobrança</option>
+                                    <option value="2">Comercial</option>
+                                    <option value="3">Correspondencia</option>
+                                    <option value="4">Entrega</option>
+                                    <option value="5">Residencial</option>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <a id="link"><i class="fa fa-plus p-1"></i>Adicionar outro endereço</a>
+                    <br />
+                    <div class="row" id="addMore" style="display: none;">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>CEP</label>
+                                <input type="text" name="ZipCode" id="ZipCode" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Endereço</label>
+                                <input type="text" name="Address" id="address" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Bairro</label>
+                                <input type="text" name="Neighborhood" id="Neigborhood" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="addMore2" style="display: none;">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Número°</label>
+                                <input type="text" name="AddressNumber" id="AddressNumber" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Complemento</label>
+                                <input type="text" name="AddressComplement" id="AddressComplement" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Cidade</label>
+                                <input type="text" name="City" id="City" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Estado</label>
+                                <input type="text" name="State" id="State" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="addMore3" style="display: none;">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Tipo Endereço:</label>
+                                <select class="custom-select" name="TypeAddress" id="TypeAddress" onchange="selectType()">
+                                    <option value="">Selecione</option>
+                                    <option value="1">Cobrança</option>
+                                    <option value="2">Comercial</option>
+                                    <option value="3">Correspondencia</option>
+                                    <option value="4">Entrega</option>
+                                    <option value="5">Residencial</option>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a class="btn btn-primary" href="@Url.Action("Index", "Home")"><i class="fa fa-arrow-left p-1"></i>Voltar</a>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <a class="btn btn-success" href="@Url.Action("AddPhoneNumber", "Client")"><i class="fa fa-arrow-rigth p-1"></i>Avançar</a>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#link').click(function () {
+                $('#addMore').css("display", "inline-flex");
+                $('#addMore2').css("display", "inline-flex");
+                $('#addMore3').css("display", "inline-flex");
+                $('#link').css("display", "none");
+            })
+        });
+    </script>
+}

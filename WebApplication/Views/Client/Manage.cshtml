@@ -1,0 +1,86 @@
+﻿@{
+    ViewData["Title"] = "Cadastro Clientes";
+}
+
+    <style>
+        a{
+            color: white;
+        }
+    </style>
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="client-pills-tab">
+                    <li class="nav-item">
+                        <a class="nav-link @(!Context.Request.Query.ContainsKey("success")? "active" : "")" id="pills-general-tab" data-toggle="pill" href="#pills-general" role="tab" aria-controls="pills-general" aria-selected="true">Dados Cadastrais</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(Context.Request.Query.ContainsKey("success")? "active" : "")" id="pills-address-tab" data-toggle="pill" href="#pills-address" role="tab" aria-controls="pills-address" aria-selected="false">Endereços</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Contatos</a>
+                    </li>
+
+
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade @(!Context.Request.Query.ContainsKey("success")? "show active" : "")" id="pills-general" role="tabpanel" aria-labelledby="pills-general-tab">@(await Component.InvokeAsync("ClientManage", new { id = Model }))</div>
+                    <div class="tab-pane fade @(Context.Request.Query.ContainsKey("success")? "show active" : "")" id="pills-address" role="tabpanel" aria-labelledby="pills-address-tab">@(Model.HasValue ? await Component.InvokeAsync("ClientAddressIndex", new { clientId = Model }) : (object)"")</div>
+                    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">@(Model.HasValue ? await Component.InvokeAsync("ClientContactIndex", new { clientId = Model }) : (object)"")</div>
+
+                </div>
+               
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button id="client-prev-step-button" class="btn btn-secondary"><i class="simple-icon-arrow-left"></i>&nbsp;Voltar</button>
+                </div>
+                <div class="col">
+                    @*&nbsp;<button id="goToNext" class="btn btn-success float-right" style="margin: 0 15px"><i class="simple-icon-arrow-right"></i>&nbsp;Avançar</button>*@
+                    &nbsp;<button id="client-next-step-button" style="@(!Context.Request.Query.ContainsKey("success")? "display:none;" : "")" class="btn btn-secondary float-right">Próximo&nbsp;<i class="simple-icon-arrow-right"></i></button>
+                    &nbsp;<button id="client-save-button" style="@(Context.Request.Query.ContainsKey("success")? "display:none;" : "")" class="btn btn-success float-right mr-2"><i class="simple-icon-cloud-upload"></i>&nbsp;Salvar</button>
+                    &nbsp;<a href="@Url.Action("Index", "Client")" style="display:none" id="client-finish-step-button" class="btn btn-success float-right mr-2"><i class="simple-icon-like"></i>&nbsp;Finalizar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script type="text/javascript">
+       
+        $('.nav-link').on('show.bs.tab', function () {
+            $('#client-save-button').hide();
+            $('#client-next-step-button').show();
+            $('#client-finish-step-button').hide();
+
+            if ($(this).is($('#pills-general-tab'))) {
+                $('#client-save-button').show();
+                $('#client-next-step-button').hide();
+            }
+
+            if ($(this).is($('#pills-users-tab'))) {
+                $('#client-next-step-button').hide();
+                $('#client-finish-step-button').show();
+            }
+        });
+         $('#client-next-step-button').click(function () {
+            $('.nav-tabs > .nav-item > .active').parent().next('li').find('a').trigger('click');
+        });
+
+        $('#client-prev-step-button').click(function () {
+            if ($('#pills-general-tab').hasClass('active')) {
+                window.location.href = "@Url.Action("Index", "Client")";
+                return;
+            }
+
+            $('.nav-tabs > .nav-item > .active').parent().prev('li').find('a').trigger('click');
+        });
+    </script>
+}

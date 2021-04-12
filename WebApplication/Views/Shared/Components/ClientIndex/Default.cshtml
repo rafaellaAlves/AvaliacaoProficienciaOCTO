@@ -1,0 +1,64 @@
+﻿<table id="client-table" class="display table table-striped table-bordered table-condensed" style="border-collapse: collapse !important; width:100%;">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>CPF/CNPJ</th>
+            <th>Tipo</th>
+            <th>&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<script type="text/javascript">
+    var clientDatatables;
+    $(document).ready(function () {
+        clientDatatables = $('#client-table').DataTable({
+            serverSide: false,
+            proccessing: true,
+            searching: true,
+            lengthChange: false,
+            pageLength: 30,
+            //dom: 'tip',
+            ajax: {
+                url: '@Url.Action("List", "Client")',
+                type: 'POST'
+            },
+            columns: [
+                { render: function (data, type, row) { return '<div class="text-center">' + row.clientId; } },
+                { render: function (data, type, row) { return '<a class="text-uppercase" href="@Url.Action("Manage", "Client")?id=' + row.clientId + '" >' + row.name + '</a>'; } },
+                { render: function (data, type, row) { return row.email; } },
+                { render: function (data, type, row) { return row.cpfcnpjDocument; } },
+                { render: function (data, type, row) { return '<div class="' + (row.typeClient = 1 ? 'cpf' : 'cnpj') + '">' + row.document + '</div>'; } },
+                {
+                    render: function (data, type, row)
+                    {
+                        return '<div class="text-center">' +                           
+                            '&nbsp;<a href="@Url.Action("Manage", "Client")?id=' + row.clientId + '"  title="Editar"><span class="badge badge-pill badge-success"><i class="simple-icon-note"></i></span></a>' +
+                            '&nbsp;<a href=\'javascript:removeClient(' + JSON.stringify(row) + ')\' title="Excluir"><span class="badge badge-pill badge-danger"><i class="simple-icon-trash"></i></span></a>' +
+                            '</div>';
+                    }
+                }
+            ]
+        });
+    });
+
+    function removeClient(client) {
+        bootboxConfirm("Deseja realmente excluir o cliente \"" + client.name + "\"?", function(result){
+            if (!result) return;
+
+            $.post('@Url.Action("_Delete", "Client")', { id: client.clientId }, function (d) {
+                if (d.hasError) {
+                    bootboxConfirm(d.message, function (d) {
+                        if(d) window.location.href = '@Url.Action("Manage", "Client")?id=' + client.clientId;
+                    })
+                    return;
+                }
+
+                bootbox.alert("Cliente \"" + client.name + "\" excluído com sucesso!");
+                clientDatatables.ajax.reload();
+            });
+        });
+    }
+</script>

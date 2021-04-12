@@ -1,0 +1,141 @@
+﻿
+
+
+<div class="row">
+    <div class="col-md-auto form-group">
+        <a href="javascript: openClientAddressEditModal();" class="btn btn-primary w-100 float-right text-nowrap"><i class="simple-icon-plus"></i>&nbsp;Adicionar</a>
+    </div>
+</div>
+<hr />
+<div id="success-area-client-address"></div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table id="client-address-table" class="display nowrap table table-striped table-bordered table-condensed w-100" style="border-collapse: collapse !important;">
+                <thead>
+                    <tr>
+                        <th>CEP</th>
+                        <th>Endereço</th>
+                        <th>Cidade</th>
+                        <th>Estado</th>
+                        <th>Tipo</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="client-address-modal" tabindex="-1" role="dialog" aria-labelledby="client-address-modal-title" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title tx-14 mg-b-0 tx-uppercase tx-inverse tx-bold" id="client-address-modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @(await Component.InvokeAsync("ClientAddressManage", new { id = Model.Model }))
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-6">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="simple-icon-close"></i>&nbsp;Fechar</button>
+                </div>
+                <div class="col-md-6">
+                    <button type="button" class="btn btn-success float-right" id="client-address-modal-save-button"><i class="simple-icon-cloud-upload"></i>&nbsp;Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+ var clientAddressDatatables;
+    $(document).ready(function () {
+        clientAddressDatatables = $('#client-address-table').DataTable({
+            serverSide: false,
+            proccessing: true,
+            searching: true,
+            lengthChange: false,
+            //dom: 'tip',
+            scrollX: true,
+            ajax: {
+                url: '@Url.Action("List", "ClientAddress")',
+                data: function (d) {
+                d.clientId = '@Model.Model'
+                },
+                type: 'POST'
+                },
+                columns: [
+                    { render: function (data, type, row) { return '<div class="cep">' + row.cep + '</div>'; } },
+                    { render: function (data, type, row) { return '<div class="text-nowrap">' + row.address + (!row.addressnumber ? '' : ', ' + row.number) + (!row.complement ? '' : ', ' + row.complement) + (!row.neighborhood ? '' : ' - ' + row.neighborhood) + '</div>'; } },
+                    { render: function (data, type, row) { return '<div class="text-nowrap">' + row.city + '</div>'; } },
+                    { render: function (data, type, row) { return row.state; } },
+                    { render: function (data, type, row) { return row.typeaddress  ? '<span class="badge badge-success badge-pill">Sim</span>' : '<span class="badge badge-danger badge-pill">Não</span>'; } },
+                    {
+                        render: function (data, type, row)
+                        {
+
+                            return '<div class=\"text-nowrap text-center\">' +
+                                '&nbsp;<a href=\'javascript:openClientAddressEditModal(' + JSON.stringify(row) + ')\' title=\"Editar\"><span class=\"badge badge-pill badge-success\"><i class=\"simple-icon-note\"></i></span></a>' +
+                                '&nbsp;<a href=\'javascript:removeClientAddress(' + JSON.stringify(row) + ')\' title=\"Excluir\"><span class=\"badge badge-pill badge-danger\"><i class=\"simple-icon-trash\"></i></span></a>' +
+                                '</div>';
+
+                        }
+                    }
+                ]
+         });
+         initSearchDataTable();
+     });
+
+                function removeClientAddress(clientCollectionAddress) {
+                bootboxConfirm("Deseja realmente excluir o endereço \"" + clientAddress.address + ", " + clientAddress.addressNumber + "\"?", function(result){
+                if (!result) return;
+
+                $.post('@Url.Action("DeleteAddress", "ClientAddress")', { id: clientAddress.clientAddressId }, function (d) {
+                bootbox.alert(d.message);
+
+                if(!d.hasError)
+                clientAddressDatatables.ajax.reload();
+                });
+                });
+                }
+
+                function openClientAddressEditModal(data) {
+                $("#main-address-area").appendTo("#form-client-collection-address .row:first");
+
+                $('#form-client-address [name=\'CEP\']').val(data == null? '' : $('.cep').masked(data.cep));
+                $('#form-client-address [name=\'Address\']').val(data == null? '' : data.address);
+                $('#form-client-address [name=\'AddressNumber\']').val(data == null? '' : data.addressNumber);
+                $('#form-client-address [name=\'AddressComplement\']').val(data == null? '' : data.addressComplement);
+                $('#form-client-address [name=\'Neighborhood\']').val(data == null? '' : data.neighborhood);
+                $('#form-client-address [name=\'City\']').val(data == null? '' : data.city);
+                $('#form-client-address [name=\'State\']').val(data == null? '' : data.state);
+                $('#form-client-address [name=\'ClientCollectionAddressId\']').val(data == null ? '' : data.clientAddressId);
+                $('#form-client-address [name=\'TypeClient\']').val(data == null ? '' : data.main.toString());
+
+
+
+                $('#client-address-modal-title').text(data == null ? 'Novo Endereço' : 'Editar Endereço');
+                $('#client-address-modal').modal('show');
+                }
+
+                $('#client-address-modal-save-button').click(function () {
+                if (!validateInputs('form-client-address')) return;
+                $('#success-area-client-address').empty();
+
+                $.post("@Url.Action("ManageAjax", "ClientAddress")", $('#form-client-address').serializeArray(), function (d) {
+                clientAddressDatatables.ajax.reload();
+                clientAddressDatatables.search($('#client-address-search').val()).draw();
+
+                $('#success-area-client-address').empty().append(successMessage());
+
+                $('#client-address-modal').modal('hide');
+                });
+                });
+
+                //$('#client-collection-address-modal').on('modal.bs.hide', function () {
+                //    $("#main-address-area").appendTo("#form-client-collection-address .address-sm:first");
+                //});
+</script>

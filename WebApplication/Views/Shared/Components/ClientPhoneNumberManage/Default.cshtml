@@ -1,0 +1,82 @@
+﻿<form id="form-client-phone">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" name="Name" id="Name" class="form-control" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="text" name="Email" id="Email" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Tipo Pessoa:</label>
+                <select class="custom-select" name="TypeClient" id="TypeClient" onchange="selectType()">
+                    <option value="">Selecione</option>
+                    <option value="1">Física</option>
+                    <option value="2">Jurídica</option>
+                </select>
+
+            </div>
+        </div>
+        <div class="col-md-6" id="Document" style="display: none;">
+            <div class="form-group">
+                <label>CPF</label>
+                <input type="text" name="CpfCnpjDocument" id="CpfCnpjDocument" class="form-control" />
+            </div>
+        </div>
+        <div class="col-md-6" id="Document2" style="display: none;">
+            <div class="form-group">
+                <label>CNPJ</label>
+                <input type="text" name="CpfCnpjDocument" id="CpfCnpjDocument" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+</form>
+<script type="text/javascript">
+    function selectType() {
+        var data = document.getElementById("TypeClient").value;
+        if (data == 1) {
+            $('#Document').css("display", "block");
+            $('#Document2').css("display", "none");
+        } else if (data == 2) {
+            $('#Document').css("display", "none");
+            $('#Document2').css("display", "block");
+        }
+    }
+      $('#client-save-button').click(function () {
+
+        if (!validateInputs('form-client-manage')) return;
+
+        $.post('@Url.Action("ValidateClient")', $('#form-client-manage').serializeArray(), function (d) {
+            if (d.hasError) {
+                bootbox.alert(d.message);
+                return;
+            }
+
+            $('#form-client-manage').submit();
+        });
+
+        //$('#pills-address-tab').trigger('click');
+    });
+
+
+    $('#goToNext').click(function () {
+        $('#pills-address-tab').trigger('click');
+    });
+
+    
+    $(document).ready(function () {
+        //Deixando como obrigatório os campos de endereço,
+        //Isto é feito por Jquery pois o endereço vem de um ViewComponent onde não é obrigatório
+        $('#form-client-manage [name=\'CEP\'], #form-client-manage [name=\'Address\'], #form-client-manage [name=\'Neighborhood\'], #form-client-manage [name=\'City\'], #form-client-mamage [name=\'AddressNumber\'],#form-client-manage [name=\'TypeClient\'], #form-client-manage [name=\'State\']').prev('label').addClass('required');
+    });
+</script>
+  

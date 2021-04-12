@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "Listagem Clientes";
+}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-6">
+                        Clientes Cadastrados
+                    </div>
+                    <div class="col-6 text-right">
+                        <a class="btn btn-primary p-1" href="@Url.Action("Manage", "Client")"><i class="fa fa-plus p-1"></i>Novo</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="ClientIndexViewComponent">
+                    @(await Component.InvokeAsync("ClientIndex"))
+                </div>
+              
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        var datatables;
+        $(document).ready(function () {
+            datatables = $('#ClientTable').DataTable({
+                serverSide: false,
+                proccessing: true,
+                searching: true,
+                lengthChange: true,
+                order: [],
+                //dom: 'tip',
+                ajax: {
+                    url: '@Url.Action("List", "Client")',
+                    type: 'GET'
+                },
+                columns: [
+                    { render: function (data, type, row) { return row.ClientId; } },
+                    { render: function (data, type, row) { return row.Name; } },
+                    { render: function (data, type, row) { return row.Email; } },
+                    { render: function (data, type, row) { return row.CpfCnpjDocument; } },
+                    {
+                        render: function (data, type, row)
+                        {
+                            return '<div class="text-center">' +
+                                '<a href=\'javascript:editClient(' + JSON.stringify(row.ClientId) + ')\'><span class="badge badge-primary">Editar</span></a>&nbsp;' +
+                                '<a style = "display: none;" href="javascript:removeClient(' + row.ClientId + ')"><span class="badge badge-danger">Excluir</span></a>' +
+                                '</div>';
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+ }

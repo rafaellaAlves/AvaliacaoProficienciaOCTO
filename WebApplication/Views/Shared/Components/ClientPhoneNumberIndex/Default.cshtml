@@ -1,0 +1,124 @@
+﻿<div class="row">
+    <div class="col-md-auto form-group">
+        <a href="javascript: openClientPhoneEditModal();" class="btn btn-primary w-100 float-right text-nowrap"><i class="simple-icon-plus"></i>&nbsp;Adicionar</a>
+    </div>
+</div>
+<hr />
+<div id="success-area-client-phone"></div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table id="client-address-table" class="display nowrap table table-striped table-bordered table-condensed w-100" style="border-collapse: collapse !important;">
+                <thead>
+                    <tr>
+                        <th>Telefone/Celular</th>                      
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="client-phone-modal" tabindex="-1" role="dialog" aria-labelledby="client-phone-modal-title" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title tx-14 mg-b-0 tx-uppercase tx-inverse tx-bold" id="client-phone-modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @(await Component.InvokeAsync("ClientPhoneNumberManage", new { id = Model.Model }))
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-6">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="simple-icon-close"></i>&nbsp;Fechar</button>
+                </div>
+                <div class="col-md-6">
+                    <button type="button" class="btn btn-success float-right" id="client-phone-modal-save-button"><i class="simple-icon-cloud-upload"></i>&nbsp;Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+ var clientPhoneDatatables;
+    $(document).ready(function () {
+        clientPhoneDatatables = $('#client-phone-table').DataTable({
+            serverSide: false,
+            proccessing: true,
+            searching: true,
+            lengthChange: false,
+            //dom: 'tip',
+            scrollX: true,
+            ajax: {
+                url: '@Url.Action("List", "ClientPhoneNumber")',
+                data: function (d) {
+                d.clientId = '@Model.Model'
+                },
+                type: 'POST'
+                },
+                columns: [
+                    { render: function (data, type, row) { return '<div class="cep">' + row.phoneNumber + '</div>'; } },
+                    {
+                        render: function (data, type, row)
+                        {
+
+                            return '<div class=\"text-nowrap text-center\">' +
+                                '&nbsp;<a href=\'javascript:openClientPhoneEditModal(' + JSON.stringify(row) + ')\' title=\"Editar\"><span class=\"badge badge-pill badge-success\"><i class=\"simple-icon-note\"></i></span></a>' +
+                                '&nbsp;<a href=\'javascript:removeClientPhone(' + JSON.stringify(row) + ')\' title=\"Excluir\"><span class=\"badge badge-pill badge-danger\"><i class=\"simple-icon-trash\"></i></span></a>' +
+                                '</div>';
+
+                        }
+                    }
+                ]
+         });
+         initSearchDataTable();
+     });
+
+    function removeClientPhone(clientCollectionAddress) {
+        bootboxConfirm("Deseja realmente excluir o contato \"" + clientPhone.phoneNumber + "\"?", function (result) {
+                if (!result) return;
+
+                $.post('@Url.Action("DeletePhone", "ClientPhoneNumber")', { id: clientPhone.clientId }, function (d) {
+                bootbox.alert(d.message);
+
+                if(!d.hasError)
+                clientPhoneDatatables.ajax.reload();
+                });
+                });
+                }
+
+                function openClientPhoneEditModal(data) {
+                $("#main-address-area").appendTo("#form-client-collection-address .row:first");
+
+                    $('#form-client-phone [name=\'PhoneNumber\']').val(data == null ? '' : $('.cep').masked(data.phoneNumber));
+                    $('#form-client-phone [name=\'TypePhoneNumber\']').val(data == null? '' : data.typePhoneNumber);
+                   
+
+
+
+                $('#client-phone-modal-title').text(data == null ? 'Novo Contato' : 'Editar Contato');
+                $('#client-phone-modal').modal('show');
+                }
+
+                $('#client-phone-modal-save-button').click(function () {
+                if (!validateInputs('form-client-phone')) return;
+                $('#success-area-client-phone').empty();
+
+                $.post("@Url.Action("ManageAjax", "ClientPhoneNumber")", $('#form-client-phone').serializeArray(), function (d) {
+                clientPhoneDatatables.ajax.reload();
+                clientPhoneDatatables.search($('#client-phone-search').val()).draw();
+
+                $('#success-area-client-phone').empty().append(successMessage());
+
+                $('#client-phone-modal').modal('hide');
+                });
+                });
+
+                //$('#client-collection-address-modal').on('modal.bs.hide', function () {
+                //    $("#main-address-area").appendTo("#form-client-collection-address .address-sm:first");
+                //});
+</script>
